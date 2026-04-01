@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GhostNote – Open Secret</title>
+  <style>
+    :root {
+      --bg:         #0d1117;
+      --surface:    #161b22;
+      --surface-2:  #21262d;
+      --border:     #30363d;
+      --text:       #c9d1d9;
+      --text-muted: #8b949e;
+      --text-bright:#f0f6fc;
+      --green:      #3fb950;
+      --green-bg:   #0d2818;
+      --red:        #f85149;
+      --red-bg:     #300a0a;
+      --red-border: #6e1a1a;
+      --orange:     #d29922;
+      --orange-bg:  #2d1f00;
+      --blue:       #58a6ff;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .container { max-width: 680px; margin: 0 auto; padding: 0 24px; }
+
+    /* Header */
+    header { border-bottom: 1px solid var(--border); padding: 16px 0; }
+    header .inner { display: flex; align-items: center; justify-content: space-between; }
+    .logo { font-size: 18px; font-weight: 600; color: var(--text-bright); }
+    .logo span { color: var(--green); }
+
+    /* Main area */
+    main { padding: 56px 0 80px; }
+
+    /* Cards */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 32px;
+      margin-bottom: 20px;
+    }
+    .card.burn-card { border-color: var(--red-border); }
+
+    /* Icon header */
+    .card-icon {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 16px;
+    }
+    .card-icon.warn { background: var(--orange-bg); }
+    .card-icon.danger { background: var(--red-bg); }
+    .card-icon.ok { background: var(--green-bg); }
+    .card-icon svg { width: 24px; height: 24px; }
+
+    .card h2 { font-size: 18px; font-weight: 600; color: var(--text-bright); margin-bottom: 8px; }
+    .card p  { font-size: 14px; color: var(--text-muted); margin-bottom: 6px; }
+
+    /* Meta row */
+    .meta-row {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin: 20px 0;
+      padding: 14px 16px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+    }
+    .meta-item { font-size: 13px; }
+    .meta-item .label { color: var(--text-muted); text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; display: block; margin-bottom: 2px; }
+    .meta-item .value { color: var(--text-bright); font-weight: 500; }
+
+    /* Burn warning notice */
+    .burn-notice {
+      background: var(--red-bg);
+      border: 1px solid var(--red-border);
+      border-radius: 6px;
+      padding: 14px 16px;
+      font-size: 13px;
+      color: var(--red);
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      margin: 16px 0 24px;
+    }
+    .burn-notice svg { flex-shrink: 0; margin-top: 1px; }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: 6px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: opacity 0.15s, background 0.15s;
+      width: 100%;
+    }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-burn { background: var(--red); color: #fff; }
+    .btn-burn:hover:not(:disabled) { opacity: 0.85; }
+    .btn-secondary {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-weight: 500;
+      font-size: 14px;
+      padding: 10px 20px;
+    }
+    .btn-secondary:hover { background: var(--border); }
+    .btn-copy {
+      background: var(--surface-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      border-radius: 0 6px 6px 0;
+      font-size: 13px;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+      width: auto;
+    }
+    .btn-copy:hover { background: var(--border); }
+
+    /* Secret reveal box */
+    .secret-box {
+      position: relative;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 18px;
+      margin: 20px 0;
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--text-bright);
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .secret-copy-row {
+      display: flex;
+      margin-bottom: 6px;
+      justify-content: flex-end;
+    }
+
+    /* Destroyed badge */
+    .destroyed-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--red-bg);
+      border: 1px solid var(--red-border);
+      color: var(--red);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+    }
+
+    /* Not found / error state */
+    .state-empty {
+      text-align: center;
+      padding: 48px 0;
+    }
+    .state-empty .big-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      opacity: 0.4;
+    }
+    .state-empty h2 { color: var(--text-bright); margin-bottom: 8px; }
+    .state-empty p  { color: var(--text-muted); max-width: 400px; margin: 0 auto 24px; }
+
+    /* Loading */
+    .loading-state { text-align: center; padding: 80px 0; color: var(--text-muted); }
+    .spinner {
+      display: inline-block;
+      width: 32px; height: 32px;
+      border: 3px solid var(--border);
+      border-top-color: var(--green);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin-bottom: 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Privacy note */
+    .privacy-note {
+      background: var(--green-bg);
+      border: 1px solid var(--green);
+      border-radius: 6px;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: var(--green);
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-top: 16px;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 20px 0;
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    footer a { color: var(--text-muted); }
+    footer a:hover { color: var(--text); }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="container inner">
+    <a href="/" class="logo" style="text-decoration:none;">Ghost<span>Note</span></a>
+  </div>
+</header>
+
+<main>
+  <div class="container">
+
+    <!-- Loading state -->
+    <div id="stateLoading" class="loading-state">
+      <div class="spinner"></div>
+      <div>Checking secret…</div>
+    </div>
+
+    <!-- Pending: burn confirmation -->
+    <div id="statePending" class="hidden">
+      <div class="card burn-card">
+        <div class="card-icon warn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#d29922" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+        </div>
+        <h2>A Secret Is Waiting For You</h2>
+        <p>Someone shared a one-time secret with you. It will be <strong style="color:var(--red)">permanently destroyed</strong> the moment you reveal it.</p>
+
+        <div class="meta-row">
+          <div class="meta-item">
+            <span class="label">Status</span>
+            <span class="value" style="color: var(--green);">Available</span>
+          </div>
+          <div class="meta-item">
+            <span class="label">Expires</span>
+            <span class="value" id="expiresAt">—</span>
+          </div>
+          <div class="meta-item">
+            <span class="label">View limit</span>
+            <span class="value">1 time only</span>
+          </div>
+        </div>
+
+        <div class="burn-notice">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <div>
+            Once you click <strong>Reveal &amp; Destroy</strong>, the encrypted data is atomically deleted from the database. This cannot be undone. There is no copy.
+          </div>
+        </div>
+
+        <button class="btn btn-burn" id="revealBtn" onclick="revealSecret()">
+          Reveal &amp; Destroy
+        </button>
+
+        <div class="privacy-note" style="margin-top:20px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Decryption happens in your browser. The key was embedded in this link and was never sent to the server.
+        </div>
+      </div>
+    </div>
+
+    <!-- Revealed state -->
+    <div id="stateRevealed" class="hidden">
+      <div class="card">
+        <div class="card-icon ok">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#3fb950" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </div>
+
+        <div class="destroyed-badge">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          Permanently Destroyed
+        </div>
+
+        <h2>Here Is Your Secret</h2>
+        <p style="margin-bottom:0;">This ciphertext has been deleted from the database. What you see below was decrypted entirely in your browser.</p>
+
+        <div class="secret-copy-row">
+          <button class="btn-copy" id="secretCopyBtn" onclick="copySecret()">Copy Secret</button>
+        </div>
+        <div class="secret-box" id="secretText"></div>
+
+        <div class="privacy-note">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          The decryption key has been cleared from this page. Refreshing will not recover the secret.
+        </div>
+
+        <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border);">
+          <a href="/" class="btn btn-secondary" style="text-decoration:none; display:inline-flex; width:auto; padding: 10px 20px;">
+            Create Your Own Secret
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Not found / already burned -->
+    <div id="stateNotFound" class="hidden">
+      <div class="state-empty">
+        <div class="big-icon">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#8b949e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        </div>
+        <h2>Secret Not Found</h2>
+        <p id="notFoundMsg">This secret has already been viewed, has expired, or the link is invalid.</p>
+        <a href="/" class="btn btn-secondary" style="text-decoration:none; display:inline-flex; width:auto; padding:10px 24px;">
+          Create a New Secret
+        </a>
+      </div>
+    </div>
+
+    <!-- Error state -->
+    <div id="stateError" class="hidden">
+      <div class="state-empty">
+        <div class="big-icon">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#f85149" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <h2>Something Went Wrong</h2>
+        <p id="errorMsg">An unexpected error occurred.</p>
+        <a href="/" class="btn btn-secondary" style="text-decoration:none; display:inline-flex; width:auto; padding:10px 24px;">
+          Go Home
+        </a>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <a href="/">GhostNote</a> &nbsp;·&nbsp;
+    <a href="/docs">API Docs</a> &nbsp;·&nbsp;
+    Zero-knowledge · Destroyed on view
+  </div>
+</footer>
+
+<script type="module">
+  import { decryptSecret } from '/static/crypto.js';
+
+  // ── State helpers ──
+  const states = ['Loading', 'Pending', 'Revealed', 'NotFound', 'Error'];
+  function showState(name) {
+    states.forEach(s => {
+      document.getElementById(`state${s}`).classList.toggle('hidden', s !== name);
+    });
+  }
+
+  // ── Parse URL ──
+  // Path: /s/{secretId}
+  // Fragment: #{keyFragment}
+  const pathParts = location.pathname.split('/');
+  const secretId   = pathParts[pathParts.length - 1];
+  const keyFragment = location.hash.slice(1); // strip leading #
+
+  // Clear key from browser history immediately — it never needs to be there again
+  if (keyFragment) {
+    history.replaceState(null, '', location.pathname);
+  }
+
+  if (!secretId || !keyFragment) {
+    document.getElementById('notFoundMsg').textContent =
+      'This link is missing required components. Make sure you copied the full URL including the part after #.';
+    showState('NotFound');
+    throw new Error('Missing secretId or keyFragment');
+  }
+
+  // ── On load: check secret exists (non-destructive) ──
+  async function init() {
+    try {
+      const res = await fetch(`/api/secrets/${secretId}`);
+      if (res.status === 404) {
+        showState('NotFound');
+        return;
+      }
+      if (!res.ok) throw new Error(`Server error: ${res.status}`);
+
+      const data = await res.json();
+      document.getElementById('expiresAt').textContent =
+        new Date(data.expires_at).toLocaleString();
+
+      showState('Pending');
+    } catch (err) {
+      if (err.message !== 'Missing secretId or keyFragment') {
+        document.getElementById('errorMsg').textContent = err.message;
+        showState('Error');
+      }
+    }
+  }
+
+  // ── Reveal: atomic fetch-and-delete, then decrypt in browser ──
+  window.revealSecret = async function () {
+    const btn = document.getElementById('revealBtn');
+    btn.disabled = true;
+    btn.textContent = 'Destroying & Decrypting…';
+
+    try {
+      // DELETE is atomic on the server side (find_one_and_delete)
+      const res = await fetch(`/api/secrets/${secretId}`, { method: 'DELETE' });
+
+      if (res.status === 404) {
+        showState('NotFound');
+        return;
+      }
+      if (!res.ok) throw new Error(`Server error: ${res.status}`);
+
+      const { ciphertext, iv } = await res.json();
+
+      // Decrypt entirely in the browser using the key that was in the URL fragment
+      // (already removed from the URL above — it only exists in memory now)
+      let plaintext;
+      try {
+        plaintext = await decryptSecret(ciphertext, iv, keyFragment);
+      } catch {
+        throw new Error(
+          'Decryption failed. The link may be corrupted or incomplete. ' +
+          'Make sure you copied the full URL including everything after #.'
+        );
+      }
+
+      document.getElementById('secretText').textContent = plaintext;
+      showState('Revealed');
+
+    } catch (err) {
+      document.getElementById('errorMsg').textContent = err.message;
+      showState('Error');
+      btn.disabled = false;
+      btn.textContent = 'Reveal & Destroy';
+    }
+  };
+
+  window.copySecret = async function () {
+    const text = document.getElementById('secretText').textContent;
+    const btn  = document.getElementById('secretCopyBtn');
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    }
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = 'Copy Secret'; }, 2000);
+  };
+
+  // Start
+  init();
+</script>
+
+</body>
+</html>

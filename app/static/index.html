@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GhostNote – One-Time Secret Sharing</title>
+  <style>
+    :root {
+      --bg:          #0d1117;
+      --surface:     #161b22;
+      --surface-2:   #21262d;
+      --border:      #30363d;
+      --text:        #c9d1d9;
+      --text-muted:  #8b949e;
+      --text-bright: #f0f6fc;
+      --green:       #3fb950;
+      --green-bg:    #0d2818;
+      --red:         #f85149;
+      --orange:      #d29922;
+      --orange-bg:   #2d1f00;
+      --blue:        #58a6ff;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── Layout ── */
+    .container { max-width: 780px; margin: 0 auto; padding: 0 24px; }
+
+    /* ── Header ── */
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 16px 0;
+    }
+    header .inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-bright);
+      letter-spacing: -0.3px;
+    }
+    .logo span { color: var(--green); }
+    .nav-links { display: flex; gap: 20px; }
+    .nav-links a { color: var(--text-muted); font-size: 14px; }
+    .nav-links a:hover { color: var(--text-bright); text-decoration: none; }
+
+    /* ── Hero ── */
+    .hero { padding: 56px 0 40px; text-align: center; }
+    .hero h1 {
+      font-size: 32px;
+      font-weight: 600;
+      color: var(--text-bright);
+      letter-spacing: -0.5px;
+      margin-bottom: 12px;
+    }
+    .hero p {
+      font-size: 16px;
+      color: var(--text-muted);
+      max-width: 520px;
+      margin: 0 auto 16px;
+    }
+    .tags { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+    .tag {
+      font-size: 12px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    .tag.green { border-color: var(--green); color: var(--green); }
+
+    /* ── Guarantees ── */
+    .guarantees {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+    .guarantee-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+    }
+    .guarantee-card .icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: var(--green-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+    .guarantee-card .icon svg {
+      width: 18px;
+      height: 18px;
+      stroke: var(--green);
+    }
+    .guarantee-card h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-bright);
+      margin-bottom: 6px;
+    }
+    .guarantee-card p {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* ── Form card ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 28px;
+      margin-bottom: 20px;
+    }
+    .card h2 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-bright);
+      margin-bottom: 20px;
+    }
+    .form-group { margin-bottom: 18px; }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    textarea, select, input[type="text"] {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 14px;
+      padding: 10px 12px;
+      transition: border-color 0.15s;
+      outline: none;
+    }
+    textarea:focus, select:focus, input[type="text"]:focus {
+      border-color: var(--blue);
+    }
+    textarea {
+      resize: vertical;
+      min-height: 140px;
+      line-height: 1.6;
+    }
+    select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238b949e' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
+    .char-hint {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 5px;
+      text-align: right;
+    }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: opacity 0.15s;
+    }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-primary { background: var(--green); color: #000; }
+    .btn-primary:hover:not(:disabled) { opacity: 0.85; }
+    .btn-secondary {
+      background: var(--surface-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { background: var(--border); }
+    .btn-full { width: 100%; justify-content: center; }
+    .btn-copy {
+      background: var(--surface-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      border-radius: 0 6px 6px 0;
+      font-size: 13px;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .btn-copy:hover { background: var(--border); }
+
+    /* ── Link result ── */
+    .link-row {
+      display: flex;
+      margin-bottom: 16px;
+    }
+    .link-row input {
+      border-radius: 6px 0 0 6px;
+      border-right: none;
+      font-family: 'SFMono-Regular', Consolas, monospace;
+      font-size: 13px;
+      background: var(--bg);
+    }
+    .link-row input:focus { border-color: var(--border); }
+
+    /* ── Notices ── */
+    .notice {
+      border-radius: 6px;
+      padding: 12px 16px;
+      font-size: 13px;
+      margin-bottom: 10px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .notice-warn {
+      background: var(--orange-bg);
+      border: 1px solid var(--orange);
+      color: var(--orange);
+    }
+    .notice-ok {
+      background: var(--green-bg);
+      border: 1px solid var(--green);
+      color: var(--green);
+    }
+    .notice svg { flex-shrink: 0; margin-top: 1px; }
+
+    /* ── Error ── */
+    .error-msg {
+      color: var(--red);
+      font-size: 13px;
+      margin-top: 8px;
+      display: none;
+    }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 24px 0;
+      margin-top: 56px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    footer a { color: var(--text-muted); }
+    footer a:hover { color: var(--text); }
+
+    .hidden { display: none !important; }
+    .spinner {
+      display: inline-block;
+      width: 14px; height: 14px;
+      border: 2px solid rgba(0,0,0,0.3);
+      border-top-color: #000;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="container inner">
+    <div class="logo">Ghost<span>Note</span></div>
+    <nav class="nav-links">
+      <a href="/docs" target="_blank">API Docs</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="container">
+
+    <!-- Hero -->
+    <section class="hero">
+      <h1>Share Secrets That Self-Destruct</h1>
+      <p>Encrypted in your browser. The server never sees your secret. Destroyed the moment it's read.</p>
+      <div class="tags">
+        <span class="tag green">AES-256-GCM</span>
+        <span class="tag">Zero-Knowledge</span>
+        <span class="tag">One-Time View</span>
+        <span class="tag">Auto-Expiry</span>
+      </div>
+    </section>
+
+    <!-- Privacy guarantees -->
+    <section class="guarantees">
+      <div class="guarantee-card">
+        <div class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
+        <h3>Encrypted In Your Browser</h3>
+        <p>AES-256-GCM encryption runs on your device before anything is sent. We only receive unreadable ciphertext.</p>
+      </div>
+      <div class="guarantee-card">
+        <div class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="7.5" cy="15.5" r="5.5"/>
+            <path d="M21 2l-9.6 9.6M15.5 7.5l3 3"/>
+          </svg>
+        </div>
+        <h3>Key Never Reaches Us</h3>
+        <p>Your decryption key lives only in the link's <code>#fragment</code>. Browsers never send fragments to servers — it's a web standard.</p>
+      </div>
+      <div class="guarantee-card">
+        <div class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/>
+          </svg>
+        </div>
+        <h3>Destroyed on First View</h3>
+        <p>Reading a secret atomically deletes it via a single MongoDB <code>find_one_and_delete()</code> call. Even we can't retrieve it after.</p>
+      </div>
+    </section>
+
+    <!-- Create form -->
+    <div class="card" id="formCard">
+      <h2>Create a Secret</h2>
+
+      <div class="form-group">
+        <label>Your Secret</label>
+        <textarea id="secretInput" placeholder="Enter a password, API key, message, or any sensitive data…"></textarea>
+        <div class="char-hint"><span id="charCount">0</span> characters</div>
+      </div>
+
+      <div class="form-group">
+        <label>Expires After</label>
+        <select id="ttlSelect">
+          <option value="3600" selected>1 hour (default)</option>
+          <option value="21600">6 hours</option>
+          <option value="86400">24 hours</option>
+          <option value="259200">3 days</option>
+          <option value="604800">7 days</option>
+        </select>
+      </div>
+
+      <div class="notice notice-ok" style="margin-bottom:18px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>Your secret is encrypted here, in your browser, before anything is sent. We never have access to the plaintext or the decryption key.</span>
+      </div>
+
+      <div id="errorMsg" class="error-msg"></div>
+
+      <button class="btn btn-primary btn-full" id="createBtn" onclick="createSecret()">
+        Generate Secure Link
+      </button>
+    </div>
+
+    <!-- Result (shown after creation) -->
+    <div class="card hidden" id="resultCard">
+      <h2>Secret Link Created</h2>
+
+      <div class="form-group">
+        <label>Share This Link (once only)</label>
+        <div class="link-row">
+          <input type="text" id="linkOutput" readonly />
+          <button class="btn-copy" id="copyBtn" onclick="copyLink()">Copy</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Expires</label>
+        <div id="expiresText" style="font-size:14px; color: var(--text-muted);"></div>
+      </div>
+
+      <div class="notice notice-warn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <div>
+          <strong>Save this link now.</strong> It won't be shown again. If you close this page, the link is the only way to access the secret.
+        </div>
+      </div>
+      <div class="notice notice-ok">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <div>
+          <strong>We cannot read this secret.</strong> The decryption key is embedded after <code>#</code> in the link and was never sent to our server.
+        </div>
+      </div>
+
+      <button class="btn btn-secondary" onclick="resetForm()" style="margin-top:8px;">
+        Create Another Secret
+      </button>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <a href="/docs">API Docs</a> &nbsp;·&nbsp;
+    Zero-knowledge · AES-256-GCM · Destroyed on view
+  </div>
+</footer>
+
+<script type="module">
+  import { encryptSecret } from '/static/crypto.js';
+
+  const secretInput = document.getElementById('secretInput');
+  const charCount   = document.getElementById('charCount');
+  const createBtn   = document.getElementById('createBtn');
+  const errorMsg    = document.getElementById('errorMsg');
+  const formCard    = document.getElementById('formCard');
+  const resultCard  = document.getElementById('resultCard');
+  const linkOutput  = document.getElementById('linkOutput');
+  const expiresText = document.getElementById('expiresText');
+  const copyBtn     = document.getElementById('copyBtn');
+
+  secretInput.addEventListener('input', () => {
+    charCount.textContent = secretInput.value.length;
+  });
+
+  window.createSecret = async function () {
+    const plaintext = secretInput.value.trim();
+    if (!plaintext) {
+      showError('Please enter a secret.');
+      return;
+    }
+
+    const ttlSeconds = parseInt(document.getElementById('ttlSelect').value, 10);
+
+    createBtn.disabled = true;
+    createBtn.innerHTML = '<span class="spinner"></span> Encrypting…';
+    hideError();
+
+    try {
+      // 1. Encrypt entirely in the browser
+      const { ciphertext, iv, keyFragment } = await encryptSecret(plaintext);
+
+      // 2. Send ONLY ciphertext + IV to the server (never the key)
+      const res = await fetch('/api/secrets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ciphertext, iv, ttl_seconds: ttlSeconds }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.detail || `Server error: ${res.status}`);
+      }
+
+      const data = await res.json();
+
+      // 3. Construct share URL — key goes in the fragment, never the path or query
+      const shareUrl = `${location.origin}/s/${data.id}#${keyFragment}`;
+
+      linkOutput.value = shareUrl;
+      expiresText.textContent = new Date(data.expires_at).toLocaleString();
+
+      formCard.classList.add('hidden');
+      resultCard.classList.remove('hidden');
+
+    } catch (err) {
+      showError(err.message);
+    } finally {
+      createBtn.disabled = false;
+      createBtn.innerHTML = 'Generate Secure Link';
+    }
+  };
+
+  window.copyLink = async function () {
+    try {
+      await navigator.clipboard.writeText(linkOutput.value);
+      copyBtn.textContent = 'Copied!';
+      setTimeout(() => { copyBtn.textContent = 'Copy'; }, 2000);
+    } catch {
+      linkOutput.select();
+      document.execCommand('copy');
+      copyBtn.textContent = 'Copied!';
+      setTimeout(() => { copyBtn.textContent = 'Copy'; }, 2000);
+    }
+  };
+
+  window.resetForm = function () {
+    secretInput.value = '';
+    charCount.textContent = '0';
+    resultCard.classList.add('hidden');
+    formCard.classList.remove('hidden');
+  };
+
+  function showError(msg) {
+    errorMsg.textContent = msg;
+    errorMsg.style.display = 'block';
+  }
+
+  function hideError() {
+    errorMsg.style.display = 'none';
+  }
+</script>
+
+</body>
+</html>
