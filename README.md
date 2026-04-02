@@ -174,7 +174,7 @@ cd GhostNote
 cp .env.example .env
 # Edit .env if needed (defaults work out of the box)
 
-docker compose up
+docker-compose up
 ```
 
 App is available at `http://localhost:8000`.  
@@ -182,10 +182,10 @@ MongoDB data is persisted in a named Docker volume (`mongo_data`).
 
 To stop:
 ```bash
-docker compose down
+docker-compose down
 
 # To also remove the database volume:
-docker compose down -v
+docker-compose down -v
 ```
 
 ---
