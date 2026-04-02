@@ -33,7 +33,7 @@
     a:hover { text-decoration: underline; }
 
     /* ── Layout ── */
-    .container { max-width: 780px; margin: 0 auto; padding: 0 24px; }
+    .container { max-width: 1060px; margin: 0 auto; padding: 0 24px; }
 
     /* ── Header ── */
     header {
@@ -52,26 +52,49 @@
       letter-spacing: -0.3px;
     }
     .logo span { color: var(--green); }
-    .nav-links { display: flex; gap: 20px; }
+    .nav-links { display: flex; gap: 20px; align-items: center; }
     .nav-links a { color: var(--text-muted); font-size: 14px; }
     .nav-links a:hover { color: var(--text-bright); text-decoration: none; }
+    .nav-github {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-muted) !important;
+      font-size: 14px;
+    }
+    .nav-github svg { width: 16px; height: 16px; }
+    .nav-github:hover { color: var(--text-bright) !important; }
 
-    /* ── Hero ── */
-    .hero { padding: 56px 0 40px; text-align: center; }
+    /* ── Top two-column grid ── */
+    .top-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: start;
+      padding: 48px 0 40px;
+    }
+    @media (max-width: 760px) {
+      .top-grid { grid-template-columns: 1fr; gap: 32px; padding: 32px 0 24px; }
+    }
+
+    /* ── Left col: hero + about ── */
+    .hero-col {}
+    .hero { margin-bottom: 32px; }
     .hero h1 {
-      font-size: 32px;
-      font-weight: 600;
+      font-size: 28px;
+      font-weight: 700;
       color: var(--text-bright);
       letter-spacing: -0.5px;
       margin-bottom: 12px;
+      line-height: 1.3;
     }
     .hero p {
-      font-size: 16px;
+      font-size: 15px;
       color: var(--text-muted);
-      max-width: 520px;
-      margin: 0 auto 16px;
+      margin-bottom: 16px;
+      line-height: 1.65;
     }
-    .tags { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+    .tags { display: flex; gap: 8px; flex-wrap: wrap; }
     .tag {
       font-size: 12px;
       padding: 3px 10px;
@@ -81,45 +104,42 @@
     }
     .tag.green { border-color: var(--green); color: var(--green); }
 
-    /* ── Guarantees ── */
-    .guarantees {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
-      margin-bottom: 40px;
+    /* ── About section ── */
+    .about-section {
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
     }
-    .guarantee-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 20px;
-    }
-    .guarantee-card .icon {
-      width: 36px;
-      height: 36px;
-      border-radius: 8px;
-      background: var(--green-bg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 12px;
-    }
-    .guarantee-card .icon svg {
-      width: 18px;
-      height: 18px;
-      stroke: var(--green);
-    }
-    .guarantee-card h3 {
-      font-size: 14px;
+    .about-section h2 {
+      font-size: 15px;
       font-weight: 600;
       color: var(--text-bright);
-      margin-bottom: 6px;
+      margin-bottom: 10px;
     }
-    .guarantee-card p {
+    .about-section p {
       font-size: 13px;
       color: var(--text-muted);
-      line-height: 1.5;
+      line-height: 1.65;
+      margin-bottom: 12px;
     }
+    .about-section p:last-of-type { margin-bottom: 16px; }
+    .github-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 14px;
+      font-size: 13px;
+      color: var(--text) !important;
+      text-decoration: none !important;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .github-link:hover { border-color: var(--text-muted); background: var(--border); }
+    .github-link svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+    /* ── Right col: form card ── */
+    .form-col {}
 
     /* ── Form card ── */
     .card {
@@ -157,21 +177,17 @@
       transition: border-color 0.15s;
       outline: none;
     }
-    textarea:focus, select:focus, input[type="text"]:focus {
-      border-color: var(--blue);
+    textarea:focus, select:focus, input[type="text"]:focus { border-color: var(--blue); }
+    textarea { resize: vertical; min-height: 130px; line-height: 1.6; }
+    select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238b949e' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 36px;
     }
-    textarea {
-      resize: vertical;
-      min-height: 140px;
-      line-height: 1.6;
-    }
-    select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238b949e' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
-    .char-hint {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-top: 5px;
-      text-align: right;
-    }
+    .char-hint { font-size: 12px; color: var(--text-muted); margin-top: 5px; text-align: right; }
 
     /* ── Buttons ── */
     .btn {
@@ -189,11 +205,7 @@
     .btn:disabled { opacity: 0.5; cursor: not-allowed; }
     .btn-primary { background: var(--green); color: #000; }
     .btn-primary:hover:not(:disabled) { opacity: 0.85; }
-    .btn-secondary {
-      background: var(--surface-2);
-      color: var(--text);
-      border: 1px solid var(--border);
-    }
+    .btn-secondary { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); }
     .btn-secondary:hover { background: var(--border); }
     .btn-full { width: 100%; justify-content: center; }
     .btn-copy {
@@ -210,10 +222,7 @@
     .btn-copy:hover { background: var(--border); }
 
     /* ── Link result ── */
-    .link-row {
-      display: flex;
-      margin-bottom: 16px;
-    }
+    .link-row { display: flex; margin-bottom: 16px; }
     .link-row input {
       border-radius: 6px 0 0 6px;
       border-right: none;
@@ -233,31 +242,74 @@
       gap: 10px;
       align-items: flex-start;
     }
-    .notice-warn {
-      background: var(--orange-bg);
-      border: 1px solid var(--orange);
-      color: var(--orange);
-    }
-    .notice-ok {
-      background: var(--green-bg);
-      border: 1px solid var(--green);
-      color: var(--green);
-    }
-    .notice svg { flex-shrink: 0; margin-top: 1px; }
+    .notice-warn { background: var(--orange-bg); border: 1px solid var(--orange); color: var(--orange); }
+    .notice-ok   { background: var(--green-bg);  border: 1px solid var(--green);  color: var(--green); }
+    .notice svg  { flex-shrink: 0; margin-top: 1px; }
 
     /* ── Error ── */
-    .error-msg {
-      color: var(--red);
-      font-size: 13px;
-      margin-top: 8px;
-      display: none;
+    .error-msg { color: var(--red); font-size: 13px; margin-top: 8px; display: none; }
+
+    /* ── Guarantees (full width below grid) ── */
+    .guarantees-section { margin-bottom: 40px; }
+    .guarantees-section h2 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-bright);
+      margin-bottom: 16px;
     }
+    .guarantees {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+    .guarantee-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+    }
+    .guarantee-card .icon {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      background: var(--green-bg);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 12px;
+    }
+    .guarantee-card .icon svg { width: 18px; height: 18px; stroke: var(--green); }
+    .guarantee-card h3 { font-size: 14px; font-weight: 600; color: var(--text-bright); margin-bottom: 6px; }
+    .guarantee-card p  { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+    .guarantee-card code {
+      font-family: 'SFMono-Regular', Consolas, monospace;
+      font-size: 12px;
+      background: var(--surface-2);
+      padding: 1px 5px;
+      border-radius: 3px;
+      color: var(--text);
+    }
+
+    /* ── Disclaimer ── */
+    .disclaimer {
+      border: 1px solid var(--orange);
+      background: var(--orange-bg);
+      border-radius: 8px;
+      padding: 20px 24px;
+      margin-bottom: 40px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .disclaimer-icon { flex-shrink: 0; margin-top: 2px; }
+    .disclaimer-icon svg { width: 20px; height: 20px; stroke: var(--orange); }
+    .disclaimer h3 { font-size: 14px; font-weight: 600; color: var(--orange); margin-bottom: 6px; }
+    .disclaimer p  { font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 6px; }
+    .disclaimer p:last-child { margin-bottom: 0; }
+    .disclaimer a  { color: var(--orange); }
+    .disclaimer a:hover { color: var(--text-bright); }
 
     /* ── Footer ── */
     footer {
       border-top: 1px solid var(--border);
       padding: 24px 0;
-      margin-top: 56px;
       text-align: center;
       font-size: 13px;
       color: var(--text-muted);
@@ -283,6 +335,12 @@
   <div class="container inner">
     <div class="logo">Ghost<span>Note</span></div>
     <nav class="nav-links">
+      <a href="https://github.com/shivanetd/GhostNote" target="_blank" rel="noopener" class="nav-github">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+        </svg>
+        GitHub
+      </a>
       <a href="/docs" target="_blank">API Docs</a>
     </nav>
   </div>
@@ -291,116 +349,163 @@
 <main>
   <div class="container">
 
-    <!-- Hero -->
-    <section class="hero">
-      <h1>Share Secrets That Self-Destruct</h1>
-      <p>Encrypted in your browser. The server never sees your secret. Destroyed the moment it's read.</p>
-      <div class="tags">
-        <span class="tag green">AES-256-GCM</span>
-        <span class="tag">Zero-Knowledge</span>
-        <span class="tag">One-Time View</span>
-        <span class="tag">Auto-Expiry</span>
+    <!-- Two-column top: hero+about LEFT, form RIGHT -->
+    <div class="top-grid">
+
+      <!-- Left column: hero + about -->
+      <div class="hero-col">
+        <div class="hero">
+          <h1>Share Secrets That<br>Self-Destruct</h1>
+          <p>Share passwords, API keys, tokens, and sensitive data via a one-time link. Encrypted in your browser before anything is sent. The server never sees your secret — not even once.</p>
+          <div class="tags">
+            <span class="tag green">AES-256-GCM</span>
+            <span class="tag">Zero-Knowledge</span>
+            <span class="tag">One-Time View</span>
+            <span class="tag">Auto-Expiry</span>
+          </div>
+        </div>
+
+        <div class="about-section">
+          <h2>About GhostNote</h2>
+          <p>GhostNote was built around a simple idea: if the server never receives your secret in readable form, it can never leak it. Your secret is encrypted with AES-256-GCM directly in your browser. The decryption key is embedded in the share link's URL fragment (<code style="font-family:monospace;font-size:12px;background:var(--surface-2);padding:1px 5px;border-radius:3px;">#key</code>) — a part of the URL that browsers never transmit to servers, by the rules of the web itself.</p>
+          <p>When the recipient opens the link, the server atomically deletes the ciphertext in the same operation that returns it. After that, nothing remains — not in the database, not in logs, not in memory. Even if you wanted to recover it, you couldn't.</p>
+          <p>GhostNote is fully open source. Every line of code that handles your data — especially <a href="https://github.com/shivanetd/GhostNote/blob/main/app/static/crypto.js" target="_blank" rel="noopener">crypto.js</a> — is publicly readable. You don't have to trust us. You can verify.</p>
+          <a href="https://github.com/shivanetd/GhostNote" target="_blank" rel="noopener" class="github-link">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+            </svg>
+            View Source on GitHub — shivanetd/GhostNote
+          </a>
+        </div>
+      </div>
+
+      <!-- Right column: create form -->
+      <div class="form-col">
+
+        <!-- Create form -->
+        <div class="card" id="formCard">
+          <h2>Create a Secret</h2>
+
+          <div class="form-group">
+            <label>Your Secret</label>
+            <textarea id="secretInput" placeholder="Enter a password, API key, message, or any sensitive data…"></textarea>
+            <div class="char-hint"><span id="charCount">0</span> characters</div>
+          </div>
+
+          <div class="form-group">
+            <label>Expires After</label>
+            <select id="ttlSelect">
+              <option value="3600" selected>1 hour (default)</option>
+              <option value="21600">6 hours</option>
+              <option value="86400">24 hours</option>
+              <option value="259200">3 days</option>
+              <option value="604800">7 days</option>
+            </select>
+          </div>
+
+          <div class="notice notice-ok" style="margin-bottom:18px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span>Your secret is encrypted here, in your browser, before anything is sent. We never have access to the plaintext or the decryption key.</span>
+          </div>
+
+          <div id="errorMsg" class="error-msg"></div>
+
+          <button class="btn btn-primary btn-full" id="createBtn" onclick="createSecret()">
+            Generate Secure Link
+          </button>
+        </div>
+
+        <!-- Result (shown after creation) -->
+        <div class="card hidden" id="resultCard">
+          <h2>Secret Link Created</h2>
+
+          <div class="form-group">
+            <label>Share This Link (once only)</label>
+            <div class="link-row">
+              <input type="text" id="linkOutput" readonly />
+              <button class="btn-copy" id="copyBtn" onclick="copyLink()">Copy</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Expires</label>
+            <div id="expiresText" style="font-size:14px; color: var(--text-muted);"></div>
+          </div>
+
+          <div class="notice notice-warn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <div><strong>Save this link now.</strong> It won't be shown again. If you close this page, the link is the only way to access the secret.</div>
+          </div>
+          <div class="notice notice-ok">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <div><strong>We cannot read this secret.</strong> The decryption key is embedded after <code>#</code> in the link and was never sent to our server.</div>
+          </div>
+
+          <button class="btn btn-secondary" onclick="resetForm()" style="margin-top:8px;">
+            Create Another Secret
+          </button>
+        </div>
+
+      </div><!-- /form-col -->
+    </div><!-- /top-grid -->
+
+    <!-- How it works — full width -->
+    <section class="guarantees-section">
+      <h2>How Your Secret Stays Secret</h2>
+      <div class="guarantees">
+        <div class="guarantee-card">
+          <div class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <h3>Encrypted In Your Browser</h3>
+          <p>AES-256-GCM encryption runs on your device before anything is sent. We only ever receive unreadable ciphertext.</p>
+        </div>
+        <div class="guarantee-card">
+          <div class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="7.5" cy="15.5" r="5.5"/>
+              <path d="M21 2l-9.6 9.6M15.5 7.5l3 3"/>
+            </svg>
+          </div>
+          <h3>Key Never Reaches Us</h3>
+          <p>Your decryption key lives only in the link's <code>#fragment</code>. Browsers never send fragments to servers — this is enforced by RFC 3986, not just our word.</p>
+        </div>
+        <div class="guarantee-card">
+          <div class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/>
+            </svg>
+          </div>
+          <h3>Destroyed on First View</h3>
+          <p>Reading a secret atomically deletes it via MongoDB's <code>find_one_and_delete()</code>. Even we can't retrieve it — there's nothing left to retrieve.</p>
+        </div>
+        <div class="guarantee-card">
+          <div class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <h3>Auto-Expiry</h3>
+          <p>A MongoDB TTL index auto-deletes unrevealed secrets after your chosen time. No cron jobs, no manual cleanup — the database enforces it natively.</p>
+        </div>
       </div>
     </section>
 
-    <!-- Privacy guarantees -->
-    <section class="guarantees">
-      <div class="guarantee-card">
-        <div class="icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-          </svg>
-        </div>
-        <h3>Encrypted In Your Browser</h3>
-        <p>AES-256-GCM encryption runs on your device before anything is sent. We only receive unreadable ciphertext.</p>
+    <!-- Disclaimer -->
+    <div class="disclaimer">
+      <div class="disclaimer-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
       </div>
-      <div class="guarantee-card">
-        <div class="icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="7.5" cy="15.5" r="5.5"/>
-            <path d="M21 2l-9.6 9.6M15.5 7.5l3 3"/>
-          </svg>
-        </div>
-        <h3>Key Never Reaches Us</h3>
-        <p>Your decryption key lives only in the link's <code>#fragment</code>. Browsers never send fragments to servers — it's a web standard.</p>
+      <div>
+        <h3>Disclaimer — Please Read</h3>
+        <p><strong>This is an experimental project</strong> provided as-is, with no guarantees of uptime, availability, or fitness for any particular purpose. Do not use GhostNote as your sole mechanism for storing or transmitting secrets in safety-critical or regulated environments.</p>
+        <p>All source code is publicly available at <a href="https://github.com/shivanetd/GhostNote" target="_blank" rel="noopener">github.com/shivanetd/GhostNote</a>. You are encouraged to read it, audit it, and self-host it. The author is not responsible for any misuse of this service, for data loss, or for any damages arising from use of this software. Use responsibly and do not share illegal content.</p>
       </div>
-      <div class="guarantee-card">
-        <div class="icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/>
-          </svg>
-        </div>
-        <h3>Destroyed on First View</h3>
-        <p>Reading a secret atomically deletes it via a single MongoDB <code>find_one_and_delete()</code> call. Even we can't retrieve it after.</p>
-      </div>
-    </section>
-
-    <!-- Create form -->
-    <div class="card" id="formCard">
-      <h2>Create a Secret</h2>
-
-      <div class="form-group">
-        <label>Your Secret</label>
-        <textarea id="secretInput" placeholder="Enter a password, API key, message, or any sensitive data…"></textarea>
-        <div class="char-hint"><span id="charCount">0</span> characters</div>
-      </div>
-
-      <div class="form-group">
-        <label>Expires After</label>
-        <select id="ttlSelect">
-          <option value="3600" selected>1 hour (default)</option>
-          <option value="21600">6 hours</option>
-          <option value="86400">24 hours</option>
-          <option value="259200">3 days</option>
-          <option value="604800">7 days</option>
-        </select>
-      </div>
-
-      <div class="notice notice-ok" style="margin-bottom:18px;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        <span>Your secret is encrypted here, in your browser, before anything is sent. We never have access to the plaintext or the decryption key.</span>
-      </div>
-
-      <div id="errorMsg" class="error-msg"></div>
-
-      <button class="btn btn-primary btn-full" id="createBtn" onclick="createSecret()">
-        Generate Secure Link
-      </button>
-    </div>
-
-    <!-- Result (shown after creation) -->
-    <div class="card hidden" id="resultCard">
-      <h2>Secret Link Created</h2>
-
-      <div class="form-group">
-        <label>Share This Link (once only)</label>
-        <div class="link-row">
-          <input type="text" id="linkOutput" readonly />
-          <button class="btn-copy" id="copyBtn" onclick="copyLink()">Copy</button>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>Expires</label>
-        <div id="expiresText" style="font-size:14px; color: var(--text-muted);"></div>
-      </div>
-
-      <div class="notice notice-warn">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-        <div>
-          <strong>Save this link now.</strong> It won't be shown again. If you close this page, the link is the only way to access the secret.
-        </div>
-      </div>
-      <div class="notice notice-ok">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        <div>
-          <strong>We cannot read this secret.</strong> The decryption key is embedded after <code>#</code> in the link and was never sent to our server.
-        </div>
-      </div>
-
-      <button class="btn btn-secondary" onclick="resetForm()" style="margin-top:8px;">
-        Create Another Secret
-      </button>
     </div>
 
   </div>
@@ -408,6 +513,7 @@
 
 <footer>
   <div class="container">
+    <a href="https://github.com/shivanetd/GhostNote" target="_blank" rel="noopener">GitHub</a> &nbsp;·&nbsp;
     <a href="/docs">API Docs</a> &nbsp;·&nbsp;
     Zero-knowledge · AES-256-GCM · Destroyed on view
   </div>
